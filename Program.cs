@@ -1,3 +1,6 @@
+using food_delivery.Services;
+using food_delivery.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +9,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<FoodDeliveryDatabaseSettings>(builder.Configuration.GetSection("FoodDeliveryDatabase"));
+builder.Services.AddSingleton<MerchantsService>();
+builder.Services.AddSingleton<MerchantMenuService>();
 
 var app = builder.Build();
 
