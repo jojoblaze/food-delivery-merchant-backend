@@ -15,17 +15,26 @@ builder.Services.AddSingleton<MerchantMenuService>();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    builder.Services.AddCors();
+    app.UseCors( options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithOrigins("http://172.19.0.2:30010", "http://localhost:3000"));
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
 
 app.Run();

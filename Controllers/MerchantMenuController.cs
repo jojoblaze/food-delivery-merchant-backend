@@ -7,7 +7,7 @@ using MongoDB.Driver;
 namespace food_delivery.Controllers;
 
 [ApiController]
-[Route("api/merchants/{merchantId:length(24)}")]
+[Route("api/merchants/{merchantId:length(24)}/menu")]
 public class MerchantMenuController : ControllerBase
 {
 
@@ -22,7 +22,7 @@ public class MerchantMenuController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Dish>>> Get([FromRoute] string merchantId)
+    public async Task<ActionResult<List<Dish>>> GetAllDishes([FromRoute] string merchantId)
     {
         var dishes = await _merchantsMenuService.GetAsync(merchantId);
 
@@ -34,8 +34,9 @@ public class MerchantMenuController : ControllerBase
         return dishes;
     }
 
-    [HttpGet("{dishId:length(24)}")]
-    public async Task<ActionResult<Dish>> GetDish([FromRoute] string merchantId, string dishId)
+    [HttpGet]
+    [Route("dish/{dishId:length(24)}")]
+    public async Task<ActionResult<Dish>> GetDish([FromRoute] string merchantId, [FromRoute] string dishId)
     {
         var dish = await _merchantsMenuService.GetDishAsync(merchantId, dishId);
 
