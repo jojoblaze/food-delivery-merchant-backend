@@ -1,16 +1,19 @@
-using food_delivery.Models;
-using Microsoft.AspNetCore.Mvc;
+namespace food_delivery.Services;
+
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using food_delivery.Models;
+using food_delivery.Producers;
 
-namespace food_delivery.Services;
-
-public class MerchantMenuService
+public class MerchantMenuService : IMerchantMenuService
 {
     private readonly IMongoCollection<Merchant> _merchantsCollection;
 
-    public MerchantMenuService(IOptions<FoodDeliveryDatabaseSettings> foodDeliveryDatabaseSettings)
+    public MerchantMenuService(
+        IOptions<FoodDeliveryDatabaseSettings> foodDeliveryDatabaseSettings
+    )
     {
         var mongoClient = new MongoClient(foodDeliveryDatabaseSettings.Value.ConnectionString);
         var mongoDatabase = mongoClient.GetDatabase(foodDeliveryDatabaseSettings.Value.DatabaseName);

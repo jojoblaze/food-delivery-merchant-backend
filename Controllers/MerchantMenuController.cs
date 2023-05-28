@@ -1,23 +1,29 @@
-using food_delivery.Services;
-using food_delivery.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 
 namespace food_delivery.Controllers;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
+using food_delivery.Services;
+using food_delivery.Models;
+using food_delivery.Producers;
+
 
 [ApiController]
 [Route("api/merchants/{merchantId:length(24)}/menu")]
 public class MerchantMenuController : ControllerBase
 {
-
     private readonly ILogger<MerchantMenuController> _logger;
 
-    private readonly MerchantMenuService _merchantsMenuService;
+    private readonly IMerchantMenuService _merchantsMenuService;
+    private readonly MerchantMenuProducer _producer;
+    private readonly string _topic;
 
-    public MerchantMenuController(MerchantMenuService merchantsMenuService, ILogger<MerchantMenuController> logger)
+    public MerchantMenuController(IMerchantMenuService merchantsMenuService, MerchantMenuProducer producer, IOptions<KafkaSettings> kafkaSettings, ILogger<MerchantMenuController> logger)
     {
         _merchantsMenuService = merchantsMenuService;
+        _producer = producer;
+        _topic = kafkaSettings.Value.MenuUpdatesTopic;
         _logger = logger;
     }
 
@@ -53,7 +59,11 @@ public class MerchantMenuController : ControllerBase
     {
         Dish? createdDish = await _merchantsMenuService.CreateDishAsync(merchantId, newDish);
         if (createdDish != null)
+        {
+            string message = JsonSerializer.Serialize<Dish>(newDish);
+            await _producer.SendOrderRequest(_topic, message);
             return CreatedAtAction(nameof(GetDish), new { merchantId = merchantId, dishId = newDish.Id }, newDish);
+        }
         else
             return BadRequest("Failed to create the dish.");
     }

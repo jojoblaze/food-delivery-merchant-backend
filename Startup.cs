@@ -1,5 +1,6 @@
 using food_delivery.Services;
 using food_delivery.Models;
+using food_delivery.Producers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<FoodDeliveryDatabaseSettings>(builder.Configuration.GetSection("FoodDeliveryDatabase"));
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
 builder.Services.AddSingleton<MerchantsService>();
-builder.Services.AddSingleton<MerchantMenuService>();
+builder.Services.AddSingleton<MerchantMenuProducer>();
+builder.Services.AddSingleton<IMerchantMenuService, MerchantMenuService>();
+
 
 var app = builder.Build();
 
