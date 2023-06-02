@@ -19,7 +19,7 @@ public class MerchantMenuProducer
         _bootstrapServers = kafkaSettings.Value.BootstrapServer;
     }
 
-    public async Task<bool> SendOrderRequest(string topic, string message)
+    public async Task<bool> SendMenuUpdate(string topic, string message)
     {
         ProducerConfig config = new ProducerConfig
         {

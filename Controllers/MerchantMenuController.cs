@@ -60,8 +60,8 @@ public class MerchantMenuController : ControllerBase
         Dish? createdDish = await _merchantsMenuService.CreateDishAsync(merchantId, newDish);
         if (createdDish != null)
         {
-            string message = JsonSerializer.Serialize<Dish>(newDish);
-            await _producer.SendOrderRequest(_topic, message);
+            string message = JsonSerializer.Serialize<Dish>(createdDish);
+            await _producer.SendMenuUpdate(_topic, message);
             return CreatedAtAction(nameof(GetDish), new { merchantId = merchantId, dishId = newDish.Id }, newDish);
         }
         else

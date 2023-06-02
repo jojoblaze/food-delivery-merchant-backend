@@ -1,6 +1,7 @@
 using food_delivery.Services;
 using food_delivery.Models;
 using food_delivery.Producers;
+using food_delivery.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafk
 builder.Services.AddSingleton<MerchantsService>();
 builder.Services.AddSingleton<MerchantMenuProducer>();
 builder.Services.AddSingleton<IMerchantMenuService, MerchantMenuService>();
-
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -24,7 +25,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     builder.Services.AddCors();
-    app.UseCors( options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithOrigins("http://172.19.0.2:30010", "http://localhost:3000"));
+    app.UseCors(options => options
+        .WithOrigins(
+            "http://172.19.0.2:30010",
+            "http://localhost:3000"
+            )
+        // .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .SetIsOriginAllowed((host) => true));
 
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -34,6 +44,7 @@ app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    endpoints.MapHub<OrdersHub>("/hubs/orders");
 });
 
 app.UseHttpsRedirection();
