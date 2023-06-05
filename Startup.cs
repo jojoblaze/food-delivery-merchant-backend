@@ -2,6 +2,7 @@ using food_delivery.Services;
 using food_delivery.Models;
 using food_delivery.Producers;
 using food_delivery.Hubs;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +15,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<FoodDeliveryDatabaseSettings>(builder.Configuration.GetSection("FoodDeliveryDatabase"));
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
 builder.Services.AddSingleton<MerchantsService>();
+builder.Services.AddSingleton<StripeProductsService>();
 builder.Services.AddSingleton<MerchantMenuProducer>();
 builder.Services.AddSingleton<IMerchantMenuService, MerchantMenuService>();
 builder.Services.AddSignalR();
+
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe").GetValue<string>("ApiKey");
 
 var app = builder.Build();
 

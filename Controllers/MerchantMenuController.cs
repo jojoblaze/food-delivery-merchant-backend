@@ -19,11 +19,20 @@ public class MerchantMenuController : ControllerBase
     private readonly MerchantMenuProducer _producer;
     private readonly string _topic;
 
-    public MerchantMenuController(IMerchantMenuService merchantsMenuService, MerchantMenuProducer producer, IOptions<KafkaSettings> kafkaSettings, ILogger<MerchantMenuController> logger)
+    private readonly StripeProductsService _stripeProductsService;
+
+    public MerchantMenuController(
+        IMerchantMenuService merchantsMenuService, 
+        MerchantMenuProducer producer, 
+        IOptions<KafkaSettings> kafkaSettings, 
+        StripeProductsService stripeProductsService, 
+        ILogger<MerchantMenuController> logger
+    )
     {
         _merchantsMenuService = merchantsMenuService;
         _producer = producer;
         _topic = kafkaSettings.Value.MenuUpdatesTopic;
+        _stripeProductsService = stripeProductsService;
         _logger = logger;
     }
 
@@ -60,6 +69,8 @@ public class MerchantMenuController : ControllerBase
         Dish? createdDish = await _merchantsMenuService.CreateDishAsync(merchantId, newDish);
         if (createdDish != null)
         {
+            _stripeProductsService.CreateProduct(merchantId, createdDish);
+
             string message = JsonSerializer.Serialize<Dish>(createdDish);
             await _producer.SendMenuUpdate(_topic, message);
             return CreatedAtAction(nameof(GetDish), new { merchantId = merchantId, dishId = newDish.Id }, newDish);
