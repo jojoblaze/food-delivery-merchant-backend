@@ -14,12 +14,16 @@ docker run -p 8080:80 -e DOTNET_URLS=http://+:80 -e Logging__Loglevel__Default=D
 Push Docker application image into Kind cluster
 ```
 kind load docker-image merchants-backend:latest --name <cluster name>
+
+kind load docker-image merchants-backend:latest --name food-delivery-cluster
 ```
 
 
 Create Kubernetes Deploy
 ```
 kubectl create -f manifest.yml --context kind-<cluster name>
+
+kubectl create -f manifest.yml --context kind-food-delivery-cluster
 
 *** --context option wants a cluster name starting with the prefix "kind-" ***
 ```

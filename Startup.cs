@@ -31,7 +31,7 @@ if (app.Environment.IsDevelopment())
     builder.Services.AddCors();
     app.UseCors(options => options
         .WithOrigins(
-            "http://172.19.0.2:30010",
+            "http://172.19.0.3:30010",
             "http://localhost:3000"
             )
         // .AllowAnyOrigin()
