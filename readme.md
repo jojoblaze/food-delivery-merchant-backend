@@ -1,4 +1,12 @@
 
+# Merchant back-end
+
+## Local deploy
+
+Run script ``deploy-k8s-local.sh`` to deploy the application locally on Kubernetes with Kind.
+
+## Docker cheats
+
 Build Docker application image
 
 ```
@@ -11,6 +19,8 @@ Run Docker application container locally on port 8080
 docker run -p 8080:80 -e DOTNET_URLS=http://+:80 -e Logging__Loglevel__Default=Debug -e Logging__Loglevel__Microsoft.AspNetCore=Debug merchants-backend
 ```
 
+## Kind cheats
+
 Push Docker application image into Kind cluster
 ```
 kind load docker-image merchants-backend:latest --name <cluster name>
@@ -19,7 +29,7 @@ kind load docker-image merchants-backend:latest --name food-delivery-cluster
 ```
 
 
-Create Kubernetes Deploy
+## Kubernetes cheats
 ```
 kubectl create -f manifest.yml --context kind-<cluster name>
 
@@ -37,7 +47,8 @@ To retrieve the IP address of your Kubernetes nodes when using Kind, you can use
 kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="InternalIP")].address }'
 ```
 
-Drop Kubernetes Deploy
+**Drop Kubernetes Deploy**
+
 ```
 kubectl delete -f manifest.yml
 ```
