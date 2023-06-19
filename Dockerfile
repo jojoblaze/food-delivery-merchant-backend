@@ -8,19 +8,19 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
 
-COPY ["food-delivery.csproj", "food-delivery/"]
-RUN dotnet restore "food-delivery/food-delivery.csproj"
+COPY ["merchant-backend.csproj", "merchant-backend/"]
+RUN dotnet restore "merchant-backend/merchant-backend.csproj"
 
-WORKDIR "/src/food-delivery"
+WORKDIR "/src/merchant-backend"
 COPY . .
 
-RUN dotnet build "food-delivery.csproj" -c Release -o /app/build
+RUN dotnet build "merchant-backend.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "food-delivery.csproj" -c Release -o /app/publish
+RUN dotnet publish "merchant-backend.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "food-delivery.dll"]
+ENTRYPOINT ["dotnet", "merchant-backend.dll"]
 
